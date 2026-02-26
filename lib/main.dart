@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
-import 'screens/profile_page.dart'; 
+import 'screens/profile_page.dart'; // Profil sayfasını import ediyoruz
 
 void main() {
   runApp(
@@ -40,6 +40,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  String _selectedCategoryName = "Hepsi"; 
 
   void _onButtonPressed(String name) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -64,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Üst Başlık
+            // Üst Başlık ve Profil Resmi
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -91,7 +92,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             
-            // Çağırdığın ama tanımlanmamış olan metodlar:
             _buildSearchArea(),
             _buildCategories(),
             _buildProductGrid(),
@@ -101,8 +101,6 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: _buildBottomNav(),
     );
   }
-
-  // --- Yardımcı Widget Metodları ---
 
   Widget _buildSearchArea() {
     return SliverToBoxAdapter(
@@ -133,38 +131,55 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCategories() {
     return SliverToBoxAdapter(
       child: Container(
-        height: 100,
+        height: 110,
         margin: const EdgeInsets.symmetric(vertical: 20),
         child: ListView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.only(left: 20),
+          physics: const BouncingScrollPhysics(), 
           children: [
-            _categoryItem("Hepsi", Icons.grid_view, true),
-            _categoryItem("Elektronik", Icons.settings_input_component, false),
-            _categoryItem("Moda", Icons.checkroom, false),
-            _categoryItem("Ev", Icons.home_repair_service, false),
+            _categoryItem("Hepsi", Icons.grid_view),
+            _categoryItem("Elektronik", Icons.settings_input_component),
+            _categoryItem("Moda", Icons.checkroom),
+            _categoryItem("Ev", Icons.home_repair_service),
+            _categoryItem("Kozmetik", Icons.auto_fix_high),
+            _categoryItem("Spor", Icons.fitness_center),
+            _categoryItem("Kitap", Icons.menu_book),
+            _categoryItem("Pet Shop", Icons.pets),
           ],
         ),
       ),
     );
   }
 
-  Widget _categoryItem(String name, IconData icon, bool isSelected) {
+  Widget _categoryItem(String name, IconData icon) {
+    bool isSelected = _selectedCategoryName == name; 
+
     return Padding(
       padding: const EdgeInsets.only(right: 15),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              color: isSelected ? Colors.deepPurple : Colors.white,
-              borderRadius: BorderRadius.circular(15),
+      child: GestureDetector(
+        onTap: () {
+          setState(() => _selectedCategoryName = name);
+          _onButtonPressed(name);
+        },
+        child: Column(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.deepPurple : Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: isSelected 
+                  ? [BoxShadow(color: Colors.deepPurple.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))]
+                  : [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)],
+              ),
+              child: Icon(icon, color: isSelected ? Colors.white : Colors.black54),
             ),
-            child: Icon(icon, color: isSelected ? Colors.white : Colors.black54),
-          ),
-          const SizedBox(height: 5),
-          Text(name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-        ],
+            const SizedBox(height: 8),
+            Text(name, style: TextStyle(fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.w500)),
+          ],
+        ),
       ),
     );
   }
@@ -188,38 +203,42 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _productCard(int index) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(15),
-                image: const DecorationImage(
-                  image: NetworkImage('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400'),
-                  fit: BoxFit.cover,
+    return InkWell(
+      onTap: () => _onButtonPressed("Ürün Detayı"),
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10)],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(15),
+                  image: const DecorationImage(
+                    image: NetworkImage('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400'),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.0),
-            child: Text("Ürün Adı", style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.0),
-            child: Text("\$120.00", style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold)),
-          ),
-          const SizedBox(height: 8),
-        ],
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              child: Text("Ürün Adı", style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              child: Text("\$120.00", style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold)),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }
@@ -232,23 +251,22 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _navItem(Icons.home_filled, 0, "Ana Sayfa"),
-          _navItem(Icons.favorite_border, 1, "Favoriler"),
-          _navItem(Icons.shopping_bag_outlined, 2, "Sepet"),
-          _navItem(Icons.person_outline, 3, "Profil"),
+          _navItem(Icons.home_filled, 0),
+          _navItem(Icons.favorite_border, 1),
+          _navItem(Icons.shopping_bag_outlined, 2),
+          _navItem(Icons.person_outline, 3),
         ],
       ),
     );
   }
 
-  Widget _navItem(IconData icon, int index, String label) {
+  Widget _navItem(IconData icon, int index) {
     bool isSelected = _selectedIndex == index;
     return IconButton(
       icon: Icon(icon, color: isSelected ? Colors.white : Colors.white54),
       onPressed: () {
         setState(() => _selectedIndex = index);
         if (index == 3) _goToProfile();
-        else _onButtonPressed(label);
       },
     );
   }
