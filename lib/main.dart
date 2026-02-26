@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
-import 'screens/profile_page.dart'; // Profil sayfasını import ediyoruz
+import 'screens/profile_page.dart'; 
 
 void main() {
   runApp(
@@ -65,7 +65,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Üst Başlık ve Profil Resmi
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -91,7 +90,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            
             _buildSearchArea(),
             _buildCategories(),
             _buildProductGrid(),
@@ -145,6 +143,9 @@ class _HomeScreenState extends State<HomeScreen> {
             _categoryItem("Kozmetik", Icons.auto_fix_high),
             _categoryItem("Spor", Icons.fitness_center),
             _categoryItem("Kitap", Icons.menu_book),
+            _categoryItem("Oyuncak", Icons.smart_toy),
+            _categoryItem("Mutfak", Icons.restaurant),
+            _categoryItem("Bahçe", Icons.local_florist),
             _categoryItem("Pet Shop", Icons.pets),
           ],
         ),
@@ -154,7 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _categoryItem(String name, IconData icon) {
     bool isSelected = _selectedCategoryName == name; 
-
     return Padding(
       padding: const EdgeInsets.only(right: 15),
       child: GestureDetector(
@@ -192,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisCount: 2,
           mainAxisSpacing: 15,
           crossAxisSpacing: 15,
-          childAspectRatio: 0.75,
+          childAspectRatio: 0.7, // Butonlar için boyutu biraz uzattık
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) => _productCard(index),
@@ -203,42 +203,77 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _productCard(int index) {
-    return InkWell(
-      onTap: () => _onButtonPressed("Ürün Detayı"),
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10)],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(15),
-                  image: const DecorationImage(
-                    image: NetworkImage('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400'),
-                    fit: BoxFit.cover,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10)],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                // Ürün Görseli
+                Container(
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(15),
+                    image: const DecorationImage(
+                      image: NetworkImage('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400'),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
+                // Favorilere Ekle (Kalp) Butonu
+                Positioned(
+                  top: 15,
+                  right: 15,
+                  child: InkWell(
+                    onTap: () => _onButtonPressed("Favorilere eklendi"),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.favorite_border, color: Colors.red, size: 18),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              child: Text("Ürün Adı", style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Nike Air Max", style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("\₺120.00", style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 16)),
+                    InkWell(
+                      onTap: () => _onButtonPressed("Sepete eklendi"),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.local_mall_outlined, color: Colors.white, size: 18),                      ),
+                      ),
+                  ],
+                ),
+              ],
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              child: Text("\$120.00", style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold)),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+        ],
       ),
     );
   }
