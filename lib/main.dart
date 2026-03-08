@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'screens/profile_page.dart'; 
+import 'screens/basket_page.dart'; // Sepet sayfan zaten import edilmiş
 
 void main() {
   runApp(
@@ -56,6 +57,14 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const ProfilePage()),
+    );
+  }
+
+  // YENİ: Sepet sayfasına gitmek için fonksiyon
+  void _goToBasket() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const BasketPage()),
     );
   }
 
@@ -192,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisCount: 2,
           mainAxisSpacing: 15,
           crossAxisSpacing: 15,
-          childAspectRatio: 0.7, // Butonlar için boyutu biraz uzattık
+          childAspectRatio: 0.7, 
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) => _productCard(index),
@@ -215,7 +224,6 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: Stack(
               children: [
-                // Ürün Görseli
                 Container(
                   margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -227,7 +235,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                // Favorilere Ekle (Kalp) Butonu
                 Positioned(
                   top: 15,
                   right: 15,
@@ -265,8 +272,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.black,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(Icons.local_mall_outlined, color: Colors.white, size: 18),                      ),
+                        child: const Icon(Icons.local_mall_outlined, color: Colors.white, size: 18),
                       ),
+                    ),
                   ],
                 ),
               ],
@@ -288,7 +296,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           _navItem(Icons.home_filled, 0),
           _navItem(Icons.favorite_border, 1),
-          _navItem(Icons.shopping_bag_outlined, 2),
+          _navItem(Icons.shopping_bag_outlined, 2), // Buraya basınca sepet açılacak
           _navItem(Icons.person_outline, 3),
         ],
       ),
@@ -301,6 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
       icon: Icon(icon, color: isSelected ? Colors.white : Colors.white54),
       onPressed: () {
         setState(() => _selectedIndex = index);
+        if (index == 2) _goToBasket(); // 2. index sepet (shopping_bag_outlined)
         if (index == 3) _goToProfile();
       },
     );
